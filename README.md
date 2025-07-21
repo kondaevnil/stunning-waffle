@@ -8,7 +8,7 @@ go mod init vk/ecom
 
 go get github.com/lib/pq
 
-### Запуск с Docker Compose (рекомендуется)
+### Запуск с Docker Compose
 make docker-up
 
 ### Или без Makefile
