@@ -1,0 +1,87 @@
+# Test commands
+.PHONY: test test-unit test-integration test-coverage test-verbose clean
+
+# Run all tests
+test:
+	@echo "Running all tests..."
+	@go test ./tests/... -v
+
+# Run only unit tests
+test-unit:
+	@echo "Running unit tests..."
+	@go test ./tests/unit/... -v
+
+# Run only integration tests  
+test-integration:
+	@echo "Running integration tests..."
+	@go test ./tests/integration/... -v
+
+# Run tests with coverage
+test-coverage:
+	@echo "Running tests with coverage..."
+	@go test ./tests/... -coverprofile=coverage.out
+	@go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report generated: coverage.html"
+
+# Run tests with verbose output and race detection
+test-verbose:
+	@echo "Running tests with race detection..."
+	@go test ./tests/... -v -race
+
+# Run specific test pattern
+test-pattern:
+	@echo "Running tests matching pattern: $(PATTERN)"
+	@go test ./tests/... -v -run "$(PATTERN)"
+
+# Clean test artifacts
+clean:
+	@echo "Cleaning test artifacts..."
+	@rm -f coverage.out coverage.html
+
+# Benchmark tests
+bench:
+	@echo "Running benchmarks..."
+	@go test ./tests/... -bench=. -benchmem
+
+# Test with timeout
+test-timeout:
+	@echo "Running tests with timeout..."
+	@go test ./tests/... -timeout 30s -v
+
+# Install test dependencies
+test-deps:
+	@echo "Installing test dependencies..."
+	@go mod download
+	@go mod tidy
+
+# Validate test structure
+test-validate:
+	@echo "Validating test structure..."
+	@find ./tests -name "*_test.go" -exec go fmt {} \;
+	@go vet ./tests/...
+
+# Generate mocks (if using mockgen in the future)
+generate-mocks:
+	@echo "Generating mocks..."
+	@echo "Manual mocks are currently used. Add mockgen commands here if needed."
+
+# Run tests in CI environment
+test-ci: test-deps test-validate test-coverage
+	@echo "CI test pipeline completed"
+
+# Help
+help:
+	@echo "Available test commands:"
+	@echo "  test              - Run all tests"
+	@echo "  test-unit         - Run unit tests only"
+	@echo "  test-integration  - Run integration tests only"
+	@echo "  test-coverage     - Run tests with coverage report"
+	@echo "  test-verbose      - Run tests with verbose output and race detection"
+	@echo "  test-pattern      - Run tests matching pattern (use PATTERN=...)"
+	@echo "  bench             - Run benchmark tests"
+	@echo "  test-timeout      - Run tests with timeout"
+	@echo "  test-deps         - Install test dependencies"
+	@echo "  test-validate     - Validate and format test code"
+	@echo "  test-ci           - Run CI test pipeline"
+	@echo "  clean             - Clean test artifacts"
+	@echo "  help              - Show this help"
